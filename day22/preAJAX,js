@@ -1,0 +1,64 @@
+window.onload=function(){
+    /**
+     * @description: 封装的个人ajax函数
+     * @param options{obj}{method,url,[data],success}method:请求方式（'get'/'post'），url:请求地址，data(可选)：传输数据，success:成功回调函数
+     * @returns {success}
+     */
+    function PresonalAjax(options){
+        var xhr=new XMLHttpRequest();
+        var qs=queryString(options.data);
+        // console.log(qs);
+        if(options.method.toUpperCase()==='GET'){
+            xhr.open(options.method,options.url+'?'+qs);
+            xhr.send();
+        }else if(options.method.toUpperCase()==='POST'){
+            xhr.open(options.method,options.url);
+            xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+            xhr.send(qs);
+        }
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState===4){
+                if(xhr.status===200){
+                    options.success(JSON.parse(xhr.responseText));
+                }else{
+                    options.error(xhr.status);
+                }
+            }
+        }
+        
+    }
+    /**
+     * @description: 将对象转换成字符串
+     * @param data{obj}
+     * @returns {string}
+     * */
+    function queryString(data){
+        var arr=[];
+        for(var k in data){
+            arr.push(k+'='+data[k]);
+        }
+        return arr.join('&');
+    }
+    // PresonalAjax({
+    //     method:'post',
+    //     url:'http://www.liulongbin.top:3006/api/addbook',
+    //     data:{
+    //         bookname:'西游记',
+    //         author:'吴承恩',
+    //         publisher:'人民邮电出版社',
+    //     },
+    //     success:function(data){
+    //         console.log(data);
+    //     }
+    // })
+    PresonalAjax({
+        method:'get',
+        url:'http://www.liulongbin.top:3006/api/getbooks',
+        data:{
+            // id:1
+        },
+        success:function (data) {
+            console.log(data);
+        }
+    })
+}

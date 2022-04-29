@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" placeholder="请输入内容" onmouseenter="this.type='text'" onmouseleave="this.type='password'">
+    <div id="userData"></div>
+
+
+    <script type="text/html" id="tpl-user">
+        <h3>姓名：{{name}}</h3>
+        <p>年龄：{{ age}}</p>
+        <p>性别：{{  genger}}</p>
+        <p>地址：{{adress  }}</p>
+    </script>
+    <script>
+        // 信息
+        var data=[{name:'zhanghao',age:18,sex:'男',adress:'北京'},{name:'zhangsan',age:21,sex:'男',adress:'上海'}];
+        for(var k in data[0]){
+            console.log(k);
+        }
+        
+        var data1={name:'zhanghao',age:18,sex:'男',adress:'北京'};
+        //对象添加iterator，使之能够使用for（ of ）遍历
+        data1[Symbol.iterator]=function(){
+            var index=0;
+            var keys=Object.keys(this);
+            // console.log(keys);
+            return{
+                next(){
+                    if(index<keys.length){
+                        return{
+                            value:data1[keys[index++]],
+                            done:false
+                        }
+                    }else{
+                        return{
+                            value:undefined,
+                            done:true
+                        }
+                    }
+                }
+            }
+        }
+        for(let item of data1){
+            console.log(item);//{name:'zhanghao',age:18,genger:'男',adress:'北京'}
+        }
+        //返回替换内容的函数
+        var template=function(id,data){
+            let str=document.getElementById(id).innerHTML;
+            let reg=/{{\s*([a-z]+)\s*}}/;
+            while(reg.test(str)){
+                str=str.replace(reg.exec(str)[0],data[reg.exec(str)[1]]);
+            }
+            return str;
+        }
+        //渲染
+        for(let i=0;i<data.length;i++){
+            document.getElementById('userData').innerHTML+=template('tpl-user',data[i]);
+        }
+        
+        var xhr=new XMLHttpRequest();
+        xhr.open('get','http://www.liulongbin.top:3006/api/news',true);
+        xhr.send(null);
+        xhr.onreadystatechange=function(){
+        if(xhr.readyState===4&&xhr.status===200){
+            var data=JSON.parse(xhr.responseText);
+            console.log(data);
+    }
+}
+        var myname=encodeURI('李子恒');
+        myname=myname.split('%');
+        myname=myname.join('');
+        console.log(myname);
+
+        /**
+         * 将16进制转换为10进制
+         * @param num{string} 16进制数字
+         * @return {Number} 10进制数字
+         **/ 
+        function BaseTransform(num){
+            let baseNum=0;
+            for(let i = 0;i<num.length;i++){
+                baseNum+=Compile(num[num.length-1-i])*(16**i);
+            }
+            return baseNum;
+        }
+        function Compile(num){
+            if(parseInt(num)<10){
+                return num;
+            }
+            switch (num) {
+                case 'A':
+                    return 10;
+                    break;
+                
+                case 'B':
+                    return 11;
+                    break;
+                case 'C':
+                    return 12;
+                    break;
+                case 'D':    
+                    return 13;
+                    break;
+                case 'E':
+                    return 14;
+                    break;
+                case 'F':
+                    return 15;
+                    break;
+                default:
+                    break;
+            }
+        }
+        console.log(BaseTransform(myname));
+        console.log(parseInt(('0X'+myname)));
+    </script>
+</body>
+</html>
